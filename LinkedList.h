@@ -186,12 +186,12 @@ void LinkedList<T>::deleteNode(T searchValue)
         return;
     
     // Determine if the first node is the one.
-    if (head->value == searchValue)
-        {
-            nodePtr = head->next;
-            delete head;
-            head = nodePtr;
-            }
+    if (*head->value == *searchValue)
+    {
+        nodePtr = head->next;
+        delete head;
+        head = nodePtr;
+    }
     else
     {
         // Initialize nodePtr to head of list
@@ -227,7 +227,6 @@ void LinkedList<T>::deleteNode(T searchValue)
 template <class T>
 T LinkedList<T>::SearchNode(T searchValue)
 {
-    cout<<"value: "<<searchValue<<endl;
     ListNode<T> *nodePtr; // To traverse the list
     nodePtr = head;
     
@@ -235,11 +234,8 @@ T LinkedList<T>::SearchNode(T searchValue)
     while (nodePtr != NULL){
         //cout<<"searching: "<<nodePtr->value<<endl;
         if(*nodePtr->value == *searchValue){
-            cout<<"true"<<endl;
             return nodePtr->value;
         }else{
-            cout<<"false"<<endl;
-
             nodePtr = nodePtr->next;
         }
     }

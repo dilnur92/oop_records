@@ -8,20 +8,78 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "LinkedList.h"
 #include "Record.h"
+
+#define MAX_STRING_SIZE 20
 ostream* std_out= &cout;
+string convertFloatToString(float f){
+    std::ostringstream ss;
+    ss << f;
+    std::string s(ss.str());
+    return s;
+}
+
+string restrictOrPadStringToCertainSize(string s){
+    string t;
+    if(s.length()>=MAX_STRING_SIZE){
+        t= s.substr(0, MAX_STRING_SIZE-3);
+        for(long i=0;i<3;i++){
+            t = t + ".";
+        }
+    }
+    else{
+        //we need to pad the string so its certain size
+        long size =s.length();
+        for(long i=size;i<MAX_STRING_SIZE;i++){
+            s = s + " ";
+        }
+        t= s;
+    }
+    
+    for(long i=0;i<5;i++){
+        t = t + " ";
+    }
+    return t;
+}
+
 //this function is used for writing Book records to file or STDIN
 ostream & operator<<(ostream & str, Book * book) {
     string paper = "yes";
     if(book->getBookPaperback() == false)
         paper = "no";
     if (str.rdbuf() == std::cout.rdbuf()){
-        str<<"Book Title: "<<book->getBookTitle()<<endl<<"Book Address: "<<book->getBookAddress()<<endl<<"Book Date: "<<book->getBookDate()<<endl<<"Book price: "<<book->getBookPrice()<<endl<<"Author First Name: "<<book->getBookAuthorFirstName()<<endl<<"Author Last Name: "<<book->getBookAuthorSurname()<<endl<<"Book is paperback: "<<paper<<endl<<"Number Of Pages: "<<book->getBookNumberOfPages()<<endl;
+        str<<restrictOrPadStringToCertainSize(book->getBookTitle())
+        <<restrictOrPadStringToCertainSize(book->getBookAddress())
+        <<restrictOrPadStringToCertainSize(book->getBookDate())
+        <<restrictOrPadStringToCertainSize(convertFloatToString (book->getBookPrice())+"$")
+        <<restrictOrPadStringToCertainSize(book->getBookAuthorFirstName()+" "+book->getBookAuthorSurname())
+        <<restrictOrPadStringToCertainSize(paper)
+        <<restrictOrPadStringToCertainSize(convertFloatToString(book->getBookNumberOfPages()))<<endl;
     }else{
         str<<book->getBookTitle()<<endl<<book->getBookAddress()<<endl<<book->getBookDate()<<endl<<book->getBookPrice()<<endl<<book->getBookAuthorFirstName()<<endl<<book->getBookAuthorSurname()<<endl<<paper<<endl<<book->getBookNumberOfPages()<<endl;
     }
     return str;
+}
+
+void printHeaders(){
+    cout<<restrictOrPadStringToCertainSize("Title");
+    cout<<restrictOrPadStringToCertainSize("Address");
+    cout<<restrictOrPadStringToCertainSize("Date");
+    cout<<restrictOrPadStringToCertainSize("Price");
+    cout<<restrictOrPadStringToCertainSize("Author Name");
+    cout<<restrictOrPadStringToCertainSize("Paperback");
+    cout<<restrictOrPadStringToCertainSize("NumPages");
+    cout<<endl;
+    cout<<"------------------------";
+    cout<<"------------------------";
+    cout<<"------------------------";
+    cout<<"------------------------";
+    cout<<"------------------------";
+    cout<<"------------------------";
+    cout<<"------------------------";
+    cout<<endl;
 }
 
 //this function is used for reading in Book records from file or STDIN
@@ -78,8 +136,7 @@ void initializeArray(LinkedList<Book*> &books, int choice, bool& repeat){
     switch(read_switch)
     {
         case 0:{
-            std::cout << "Displaying the List \n";
-            
+            printHeaders();
             books.displayList(*std_out);
             break;
         }
@@ -100,8 +157,15 @@ void initializeArray(LinkedList<Book*> &books, int choice, bool& repeat){
             Book* t = new Book();
             t->setBookTitle(title);
             cout<<"Book Title being deleted: "<<title<<endl;
-            books.deleteNode(t);
-            
+            Book *tk = books.SearchNode(t);
+            if(tk->getBookAddress() == ""){
+                cout<<"No such book in the list"<<endl;
+            }else{
+                cout<<"Details about the Book that is deleted: "<<endl;
+                printHeaders();
+                cout<<tk<<endl;
+                books.deleteNode(t);
+            }
             break;
         }
         case 3:{
@@ -119,7 +183,9 @@ void initializeArray(LinkedList<Book*> &books, int choice, bool& repeat){
             if(tk->getBookAddress() == ""){
                 cout<<"No such book in the list"<<endl;
             }else{
-                cout<<(tk)<<endl;
+                cout<<"Details about the Book that is found: "<<endl;
+                printHeaders();
+                cout<<tk<<endl;
             }
             break;
         }
@@ -181,7 +247,6 @@ int main(){// Start main
         }
         in.close();
     }
-    
     do
     {// Start do
         mainMenu(books, repeat);

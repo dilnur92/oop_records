@@ -82,7 +82,7 @@ public:
     
     //overloading the != operator
     bool operator != (const Record &other_Record) const{
-        return !(this == &other_Record);
+        return !(*this == other_Record);
         
     }
     
